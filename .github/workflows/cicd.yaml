@@ -50,7 +50,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:1.0.${{ github.run_id }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:1.0.${{ github.run_number }}
           push: true
 
     
@@ -59,7 +59,7 @@ jobs:
       - name: Run Trivy vulnerability scanner on docker image
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_id }}'
+          image-ref: 'docker.io/${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
