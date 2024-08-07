@@ -82,41 +82,41 @@ jobs:
           tags: georgeao/firstapp:v1.0.${{ github.run_id }}
       
 
-  modify_image_tag:
-    needs: push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          repository: 'repo-link'
-          token: ${{ secrets.GIT_TOKEN }}
-          path: 'repo-path'
+  # modify_image_tag:
+  #   needs: push
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: 'repo-link'
+  #         token: ${{ secrets.GIT_TOKEN }}
+  #         path: 'repo-path'
 
-      - name: Changing the deployment of git repo
-        run: |
-          git config user.email "${{ secrets.email }}"
-          git config user.name "${{ secrets.name }}"
-          echo "Working Directory: $(pwd)"
+  #     - name: Changing the deployment of git repo
+  #       run: |
+  #         git config user.email "${{ secrets.email }}"
+  #         git config user.name "${{ secrets.name }}"
+  #         echo "Working Directory: $(pwd)"
        
-          # Navigate to the specific Helm chart directory
-          cd helm-chart-dir
+  #         # Navigate to the specific Helm chart directory
+  #         cd helm-chart-dir
          
-          # Print values.yaml for debugging before changes
-          echo "Before modification:"
-          cat values.yaml
+  #         # Print values.yaml for debugging before changes
+  #         echo "Before modification:"
+  #         cat values.yaml
          
-          sed -i 's/^ *tag:.*/  tag: "'${{ vars.ENVIRONMENT }}-${{ github.run_number }}'"/' values.yaml
+  #         sed -i 's/^ *tag:.*/  tag: "'${{ vars.ENVIRONMENT }}-${{ github.run_number }}'"/' values.yaml
          
-          # Print values.yaml for debugging after changes
-          echo "After modification:"
-          cat values.yaml
+  #         # Print values.yaml for debugging after changes
+  #         echo "After modification:"
+  #         cat values.yaml
          
-          git add values.yaml
-          git commit -m "Update image tag by Github Actions Job change manifest: ${{ github.run_id }}"
-          git push origin dev
-        env:
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_PASSWORD: ${{ secrets.GIT_TOKEN }}
-          RUN_NUMBER: ${{ github.run_id }}
-          ENVIRONMENT: ${{ vars.ENVIRONMENT }}
+  #         git add values.yaml
+  #         git commit -m "Update image tag by Github Actions Job change manifest: ${{ github.run_id }}"
+  #         git push origin dev
+  #       env:
+  #         GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+  #         GIT_PASSWORD: ${{ secrets.GIT_TOKEN }}
+  #         RUN_NUMBER: ${{ github.run_id }}
+  #         ENVIRONMENT: ${{ vars.ENVIRONMENT }}
