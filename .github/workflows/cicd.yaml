@@ -46,26 +46,32 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      - name: Build & Push docker image
+      - name: Build docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:1.0.${{ github.run_number }}
-          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
+          push: false
+          load: true
 
     
-    
-
       - name: Run Trivy vulnerability scanner on docker image
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: 'docker.io/${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}'
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-      
+
+      - name: Push docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
+          push: true
+          
 
   # modify_image_tag:
   #   needs: push
