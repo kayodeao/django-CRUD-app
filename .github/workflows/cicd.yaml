@@ -96,7 +96,7 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
           # path: 'django-repo'
 
-      - name: Changing the deployment of git repo
+      - name: Modifying the k8s manifest in git repo
         run: |
           git config user.email "${{ secrets.GIT_EMAIL }}"
           git config user.name "${{ secrets.GIT_USERNAME }}"
@@ -110,7 +110,7 @@ jobs:
           echo "Before modification: "
           cat deployment.yaml
          
-          sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/v1.0.${{ github.run_number }}|g" deployment.yaml
+          sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}|g" deployment.yaml
          
           # Print values.yaml for debugging after changes
           echo "After modification:"
