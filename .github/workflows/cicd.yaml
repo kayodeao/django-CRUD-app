@@ -94,7 +94,7 @@ jobs:
         with:
           repository: '${{ secrets.GIT_USERNAME }}/django-CRUD-app-K8s'
           token: ${{ secrets.GIT_TOKEN }}
-          path: 'django-repo'
+          # path: 'django-repo'
 
       - name: Changing the deployment of git repo
         run: |
@@ -103,7 +103,7 @@ jobs:
           echo "Working Directory: $(pwd)"
        
           # Navigate to the specific k8s directory
-          cd django-repo
+          # cd django-repo
           cd k8s
          
           # Print values.yaml for debugging before changes
