@@ -5,34 +5,34 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # Checkout_and_Code_Scan:
-  #   runs-on: ubuntu-20.04
+  Checkout_and_Code_Scan:
+    runs-on: ubuntu-20.04
 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name: SonarQube Scan
-  #       uses: sonarsource/sonarqube-scan-action@master
-  #       with:
-  #         projectBaseDir: .
-  #         args: >
-  #           -Dsonar.projectKey=Django-CRUD-app
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=Django-CRUD-app
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-  #     - name: SonarQube Quality Gate check
-  #       id: sonarqube-quality-gate-check
-  #       uses: sonarsource/sonarqube-quality-gate-action@master
-  #       with:
-  #         projectBaseDir: .
-  #         args: >
-  #           -Dsonar.projectKey=Django-CRUD-app
-  #       timeout-minutes: 5
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=Django-CRUD-app
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
     
       # - name: Set up Python 3.9
       #   uses: actions/setup-python@v3
@@ -44,45 +44,45 @@ jobs:
       #     python -m pip install --upgrade pip
       #     pip install -r requirements.txt
         
-      #- name: Run Tests
-      # run: |
-      # python manage.py test
-  # Build_and_Scan_docker_image:
-  #   runs-on: ubuntu-20.04
-  #   needs: Checkout_and_Code_Scan
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Login to Docker Hub
-  #       uses: docker/login-action@v3
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # - name: Run Tests
+      #   run: |
+      #     python manage.py test
+  Build_and_Scan_docker_image:
+    runs-on: ubuntu-20.04
+    needs: Checkout_and_Code_Scan
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-  #     - name: Build docker image
-  #       uses: docker/build-push-action@v6
-  #       with:
-  #         context: .
-  #         tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
-  #         push: false
-  #         load: true
+      - name: Build docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
+          push: false
+          load: true
 
     
-  #     - name: Run Trivy vulnerability scanner on docker image
-  #       uses: aquasecurity/trivy-action@0.20.0
-  #       with:
-  #         image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}'
-  #         format: 'table'
-  #         exit-code: '0'
-  #         ignore-unfixed: true
-  #         vuln-type: 'os,library'
-  #         severity: 'CRITICAL'
+      - name: Run Trivy vulnerability scanner on docker image
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
 
-  #     - name: Push docker image
-  #       uses: docker/build-push-action@v6
-  #       with:
-  #         context: .
-  #         tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
-  #         push: true
+      - name: Push docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
+          push: true
           
 
   modify_image_tag:
