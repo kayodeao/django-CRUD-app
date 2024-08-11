@@ -116,7 +116,7 @@ jobs:
           echo "After modification:"
           cat deployment.yaml
          
-          git add deployment.yaml
+          git add .
           git commit -m "Update image tag by Github Actions Job change manifest: ${{ github.run_number }}"
           git push origin main
         env:
