@@ -3,7 +3,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 import boto3
-from dotenv import load_dotenv
 import os
 
 
