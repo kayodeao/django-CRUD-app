@@ -86,7 +86,7 @@ jobs:
           
 
   modify_image_tag:
-    # needs: push
+    needs: Build_and_Scan_docker_image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -94,7 +94,7 @@ jobs:
         with:
           repository: '${{ secrets.GIT_USERNAME }}/django-CRUD-app-K8s'
           token: ${{ secrets.GIT_TOKEN }}
-          # path: 'django-repo'
+      
 
       - name: Modifying the k8s manifest in git repo
         run: |
@@ -103,7 +103,7 @@ jobs:
           echo "Working Directory: $(pwd)"
        
           # Navigate to the specific k8s directory
-          # cd django-repo
+      
           cd k8s
          
           # Print values.yaml for debugging before changes
