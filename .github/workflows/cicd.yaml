@@ -5,34 +5,34 @@ on:
     branches: [ "main" ]
 
 jobs:
-  Checkout_and_Code_Scan:
-    runs-on: ubuntu-20.04
+  # Checkout_and_Code_Scan:
+  #   runs-on: ubuntu-20.04
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@master
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=Django-CRUD-app
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  #     - name: SonarQube Scan
+  #       uses: sonarsource/sonarqube-scan-action@master
+  #       with:
+  #         projectBaseDir: .
+  #         args: >
+  #           -Dsonar.projectKey=Django-CRUD-app
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=Django-CRUD-app
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  #     - name: SonarQube Quality Gate check
+  #       id: sonarqube-quality-gate-check
+  #       uses: sonarsource/sonarqube-quality-gate-action@master
+  #       with:
+  #         projectBaseDir: .
+  #         args: >
+  #           -Dsonar.projectKey=Django-CRUD-app
+  #       timeout-minutes: 5
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
     
       # - name: Set up Python 3.9
       #   uses: actions/setup-python@v3
@@ -47,79 +47,78 @@ jobs:
       #- name: Run Tests
       # run: |
       # python manage.py test
-  Build_and_Scan_docker_image:
-    runs-on: ubuntu-20.04
-    needs: Checkout_and_Code_Scan
-    steps:
-      - uses: actions/checkout@v4
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  # Build_and_Scan_docker_image:
+  #   runs-on: ubuntu-20.04
+  #   needs: Checkout_and_Code_Scan
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      - name: Build docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
-          push: false
-          load: true
+  #     - name: Build docker image
+  #       uses: docker/build-push-action@v6
+  #       with:
+  #         context: .
+  #         tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
+  #         push: false
+  #         load: true
 
     
-      - name: Run Trivy vulnerability scanner on docker image
-        uses: aquasecurity/trivy-action@0.20.0
-        with:
-          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}'
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL'
+  #     - name: Run Trivy vulnerability scanner on docker image
+  #       uses: aquasecurity/trivy-action@0.20.0
+  #       with:
+  #         image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}'
+  #         format: 'table'
+  #         exit-code: '0'
+  #         ignore-unfixed: true
+  #         vuln-type: 'os,library'
+  #         severity: 'CRITICAL'
 
-      - name: Push docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
-          push: true
+  #     - name: Push docker image
+  #       uses: docker/build-push-action@v6
+  #       with:
+  #         context: .
+  #         tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
+  #         push: true
           
 
-  # modify_image_tag:
-  #   needs: push
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: 'repo-link'
-  #         token: ${{ secrets.GIT_TOKEN }}
-  #         path: 'repo-path'
+  modify_image_tag:
+    # needs: push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: '${{ secrets.GIT_USERNAME }}/django-CRUD-app-K8s'
+          token: ${{ secrets.GIT_TOKEN }}
+          path: 'django-repo'
 
-  #     - name: Changing the deployment of git repo
-  #       run: |
-  #         git config user.email "${{ secrets.email }}"
-  #         git config user.name "${{ secrets.name }}"
-  #         echo "Working Directory: $(pwd)"
+      - name: Changing the deployment of git repo
+        run: |
+          git config user.email "${{ secrets.GIT_EMAIL }}"
+          git config user.name "${{ secrets.GIT_USERNAME }}"
+          echo "Working Directory: $(pwd)"
        
-  #         # Navigate to the specific Helm chart directory
-  #         cd helm-chart-dir
+          # Navigate to the specific k8s directory
+          cd django-repo
+          cd k8s
          
-  #         # Print values.yaml for debugging before changes
-  #         echo "Before modification:"
-  #         cat values.yaml
+          # Print values.yaml for debugging before changes
+          echo "Before modification:"
+          cat deployment.yaml
          
-  #         sed -i 's/^ *tag:.*/  tag: "'${{ vars.ENVIRONMENT }}-${{ github.run_number }}'"/' values.yaml
+          sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/v1.0.${{ github.run_number }}|g" deployment.yaml
          
-  #         # Print values.yaml for debugging after changes
-  #         echo "After modification:"
-  #         cat values.yaml
+          # Print values.yaml for debugging after changes
+          echo "After modification:"
+          cat deployment.yaml
          
-  #         git add values.yaml
-  #         git commit -m "Update image tag by Github Actions Job change manifest: ${{ github.run_id }}"
-  #         git push origin dev
-  #       env:
-  #         GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-  #         GIT_PASSWORD: ${{ secrets.GIT_TOKEN }}
-  #         RUN_NUMBER: ${{ github.run_id }}
-  #         ENVIRONMENT: ${{ vars.ENVIRONMENT }}
+          git add deployment.yaml
+          git commit -m "Update image tag by Github Actions Job change manifest: ${{ github.run_number }}"
+          git push origin main
+        env:
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_PASSWORD: ${{ secrets.GIT_TOKEN }}
