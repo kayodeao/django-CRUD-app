@@ -107,7 +107,7 @@ jobs:
           cd k8s
          
           # Print values.yaml for debugging before changes
-          echo "Before modification:"
+          echo "Before modification: "
           cat deployment.yaml
          
           sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/v1.0.${{ github.run_number }}|g" deployment.yaml
