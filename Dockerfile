@@ -11,10 +11,6 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-# Set environment variables (if needed)
-ENV AWS_REGION=$AWS_REGION
-ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
 
 EXPOSE 8000
