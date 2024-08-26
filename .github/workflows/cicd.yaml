@@ -1,8 +1,7 @@
 name: Django CI
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   # Checkout_and_Code_Scan:
@@ -71,11 +70,18 @@ jobs:
         uses: aquasecurity/trivy-action@0.20.0
         with:
           image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}'
-          format: 'table'
           exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
           severity: 'CRITICAL'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Push docker image
         uses: docker/build-push-action@v6
