@@ -116,18 +116,18 @@ jobs:
       
           cd k8s
          
-          # Print values.yaml for debugging before changes
+          # Print deploymennt.yaml for debugging before changes
           echo "Before modification: "
           cat deployment.yaml
          
           sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}|g" deployment.yaml
          
-          # Print values.yaml for debugging after changes
+          # Print deployment.yaml for debugging after changes
           echo "After modification:"
           cat deployment.yaml
          
           git add .
-          git commit -m "Update image tag by Github Actions Job change manifest: ${{ github.run_number }}"
+          git commit -m "Update image tag in K8s manifest to v1.0.${{ github.run_number }}"
           git push origin main
         env:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
