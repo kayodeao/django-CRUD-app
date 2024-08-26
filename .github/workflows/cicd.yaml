@@ -95,7 +95,7 @@ jobs:
           push: true
           
 
-  modify_image_tag:
+  modify_image_tag_in_K8s_repo:
     needs: Build_and_Scan_docker_image
     runs-on: ubuntu-latest
     steps:
