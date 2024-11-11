@@ -8,35 +8,14 @@ permissions:
   security-events: write
 
 jobs:
-  # Checkout_and_Code_Scan:
-  #   runs-on: ubuntu-20.04
+  Checkout_and_Code_Scan:
+    runs-on: ubuntu-20.04
 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name: SonarQube Scan
-  #       uses: sonarsource/sonarqube-scan-action@master
-  #       with:
-  #         projectBaseDir: .
-  #         args: >
-  #           -Dsonar.projectKey=Django-CRUD-app
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-  #     - name: SonarQube Quality Gate check
-  #       id: sonarqube-quality-gate-check
-  #       uses: sonarsource/sonarqube-quality-gate-action@master
-  #       with:
-  #         projectBaseDir: .
-  #         args: >
-  #           -Dsonar.projectKey=Django-CRUD-app
-  #       timeout-minutes: 5
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-    
+  
       # - name: Set up Python 3.9
       #   uses: actions/setup-python@v3
       #   with:
@@ -95,40 +74,6 @@ jobs:
           push: true
           
 
-  modify_image_tag_in_K8s_repo:
-    needs: Build_and_Scan_docker_image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          repository: '${{ secrets.GIT_USERNAME }}/django-CRUD-app-K8s'
-          token: ${{ secrets.GIT_TOKEN }}
-      
-
-      - name: Modifying the k8s manifest in git repo
-        run: |
-          git config user.email "${{ secrets.GIT_EMAIL }}"
-          git config user.name "${{ secrets.GIT_USERNAME }}"
-          echo "Working Directory: $(pwd)"
-       
-          # Navigate to the specific k8s directory
-      
-          cd k8s
-         
-          # Print deploymennt.yaml for debugging before changes
-          echo "Before modification: "
-          cat deployment.yaml
-         
-          sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}|g" deployment.yaml
-         
-          # Print deployment.yaml for debugging after changes
-          echo "After modification:"
-          cat deployment.yaml
-         
-          git add .
-          git commit -m "Update image tag in K8s manifest to v1.0.${{ github.run_number }}"
-          git push origin main
-        env:
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_PASSWORD: ${{ secrets.GIT_TOKEN }}
+  
+  #         GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+  #         GIT_PASSWORD: ${{ secrets.GIT_TOKEN }}
