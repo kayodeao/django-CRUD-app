@@ -7,31 +7,10 @@ permissions:
   contents: write
   security-events: write
 
-jobs:
-  Checkout_and_Code_Scan:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-  
-      # - name: Set up Python 3.9
-      #   uses: actions/setup-python@v3
-      #   with:
-      #     python-version: 3.9
-        
-      # - name: Install Dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install -r requirements.txt
-        
-      # - name: Run Tests
-      #   run: |
-      #     python manage.py test
+jobs:  
+     
   Build_and_Scan_docker_image:
     runs-on: ubuntu-20.04
-    # needs: Checkout_and_Code_Scan
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
@@ -48,7 +27,6 @@ jobs:
           push: false
           load: true
 
-    
       - name: Run Trivy vulnerability scanner on docker image
         uses: aquasecurity/trivy-action@0.20.0
         with:
@@ -73,7 +51,18 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/django-app:v1.0.${{ github.run_number }}
           push: true
           
-
-  
-  #         GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-  #         GIT_PASSWORD: ${{ secrets.GIT_TOKEN }}
+  Upload_scan_report_to_Defectdojo:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+      - name: Install Dependencies and Upload to DefectDojo
+        env:
+          DEFECT_DOJO_TOKEN: ${{ secrets.DEFECT_DOJO_TOKEN }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+          python import_scan.py trivy-results.sarif
