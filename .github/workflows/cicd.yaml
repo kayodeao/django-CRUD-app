@@ -66,4 +66,4 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install requests
-          python upload_report.py trivy-results.sarif
+          python upload-report.py trivy-results.sarif
