@@ -53,6 +53,7 @@ jobs:
           
   Upload_scan_report_to_Defectdojo:
     runs-on: ubuntu-20.04
+    needs:  Build_and_Scan_docker_image 
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.9
